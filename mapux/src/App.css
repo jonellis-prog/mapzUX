@@ -82,7 +82,7 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
 
 .map-div {
   min-width: 80%;
-  min-height: 440px;
+  min-height: 220px;
   border-width: 10px; /* Adjust thickness */
   border-color: #ccc; /* Base color */
   /* Choose one style: */

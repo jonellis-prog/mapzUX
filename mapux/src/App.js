@@ -41,7 +41,7 @@ function App() {
                 </div>  
                 <br />                                
         </Container>
-        <main>
+        <main className='map-div'>
             <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false} className="leaflet-container">
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
