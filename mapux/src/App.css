@@ -80,6 +80,26 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
 }
 .right { width: 10%; }
 
+.map-div {
+  min-width: 80%;
+  min-height: 440px;
+  border-width: 10px; /* Adjust thickness */
+  border-color: #ccc; /* Base color */
+  /* Choose one style: */
+  /* border-style: ridge; */ /* Looks raised */
+  /* border-style: outset; */ /* Also raised */
+  border-style: inset;  /* Looks pressed in */
+  /* border-style: groove; /* Grooved effect */
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.leaflet-container {
+  height: 100vh; /* or any specific height you need */
+  width: 100%;
+}
+
+
 
 
 @keyframes App-logo-spin {
