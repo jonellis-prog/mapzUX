@@ -6,7 +6,12 @@
     import { createStringXY } from 'ol/coordinate';
     import { defaults as defaultControls } from 'ol/control';
     import { fromLonLat } from 'ol/proj';
+    import 'bootstrap/dist/css/bootstrap.min.css';  // from 'react-bootstrap';
+    import { Container, FormControl, Card, Button } from 'react-bootstrap';
+    
     import 'ol/ol.css'; // Import OpenLayers CSS
+    import './App.css';
+    import ds from "./images/DeathStar.png";
 
     const MapComponent = () => {
       const mapRef = useRef();
@@ -53,10 +58,32 @@
 
       return (
         <div>
-          <div>
-            <br></br>
-            Nav goers here....
-            <br />
+          <div style={{ width: '100%'}}>
+                <Container className="bg-dark mt-12 tealtext">
+                        <div className="row">
+                            <div className="col-sm-2">
+                                <img src={ds} height="64px"></img>
+                                <h3>DStar Maps</h3>
+                            </div>
+                            <div className = "col-sm-6">
+                                
+                                        <div>
+                                            <label class="navteal">Optional: Find coordinates of an address</label>
+                                            <FormControl type="text" className="form-control-sm" />
+                                            <Button variant="primary" size="sm">Find Coordinates!</Button>
+                                        </div>  
+                            </div>                            
+                            <div class="col-sm-4">
+                                <div>
+                                    <label >Enter coordinates</label>
+                                    <FormControl type="text" className="form-control-sm" id="XCoord" title="X Coordinate" />
+                                    <FormControl type="text" className="form-control-sm" id="YCoord" title="Y coordinate" />
+                                    <Button variant="primary" size="sm">Show!</Button>
+                                </div>
+                            </div>
+                        </div>  
+                        <br />                                
+                </Container>
             </div>  
           <div ref={mapRef} style={{ width: '100%', height: '500px' }}></div>
           <div id="mouse-position" className="mouse-position-display">
