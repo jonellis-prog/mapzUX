@@ -100,6 +100,17 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
 }
 
 
+.mapRow{
+    text-align: center;
+    height: 300px;
+    width: 600px;
+}
+
+.map-container{
+    height: 440px;
+    width: 100%;
+  }
+
 
 
 @keyframes App-logo-spin {
