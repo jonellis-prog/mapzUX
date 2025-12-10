@@ -82,7 +82,7 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
 
 .map-div {
   min-width: 80%;
-  min-height: 220px;
+  min-height: 440px;
   border-width: 10px; /* Adjust thickness */
   border-color: #ccc; /* Base color */
   /* Choose one style: */
@@ -99,6 +99,17 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
   width: 100%;
 }
 
+
+.mapRow{
+    text-align: center;
+    height: 300px;
+    width: 600px;
+}
+
+.map-container{
+    height: 440px;
+    width: 100%;
+  }
 
 
 

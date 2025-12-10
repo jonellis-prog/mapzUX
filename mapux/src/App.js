@@ -1,62 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
-import 'leaflet/dist/leaflet.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Button, Row, card, Col, FormControl} from 'react-bootstrap';
-// import { MapContainer, TileLayer, Marker, Popup } from '../src/static/leaflet/leaflet-src2';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+    import React, { useEffect, useRef, useState } from 'react';
+    import { Map, View } from 'ol';
+    import TileLayer from 'ol/layer/Tile';
+    import OSM from 'ol/source/OSM';
+    import MousePosition from 'ol/control/MousePosition';
+    import { createStringXY } from 'ol/coordinate';
+    import { defaults as defaultControls } from 'ol/control';
+    import 'ol/ol.css'; // Import OpenLayers CSS
 
-import ds from "./images/DeathStar.png";
+    const MapComponent = () => {
+      const mapRef = useRef();
+      const [mouseCoordinates, setMouseCoordinates] = useState('');
 
+      useEffect(() => {
+        const mousePositionControl = new MousePosition({
+          coordinateFormat: createStringXY(4), // Format coordinates to 4 decimal places
+          projection: 'EPSG:4326', // Display coordinates in Lat/Lon
+          className: 'custom-mouse-position', // Custom class for styling
+          target: document.getElementById('mouse-position'), // Target element for display
+          undefinedHTML: '&nbsp;', // What to display when mouse leaves map
+        });
 
-const MapComponent = () => {
-  const position = [51.505, -0.09];
-}
-function App() {
-  return (
-    <div className="bg-dark min-vh-100">
-        <br/>
-        <Container className="bg-dark mt-12 tealtext">
-                <div className="row">
-                    <div className="col-sm-2">
-                        <img src={ds} height="64px"></img>
-                        <h3>DStar Maps</h3>
-                    </div>
-                    <div className = "col-sm-6">
-                        
-                                <div>
-                                    <label >Optional: Find coordinates of an address</label>
-                                    <FormControl type="text" className="form-control-sm" />
-                                    <Button variant="primary" size="sm">Find Coordinates!</Button>
-                                </div>  
-                    </div>                            
-                    <div class="col-sm-4">
-                        <div>
-                            <label >Enter coordinates</label>
-                            <FormControl type="text" className="form-control-sm" id="XCoord" title="X Coordinate" />
-                            <FormControl type="text" className="form-control-sm" id="YCoord" title="Y coordinate" />
-                            <Button variant="primary" size="sm">Show!</Button>
-                        </div>
-                    </div>
-                </div>  
-                <br />                                
-        </Container>
-        <main className='map-div'>
-            <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false} className="leaflet-container">
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" // Example tile provider URL
-            />
-            <Marker position={[51.505, -0.09]}>
-                <Popup>
-                A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-            </Marker>
-            </MapContainer>
-        </main>
+        const map = new Map({
+          controls: defaultControls().extend([mousePositionControl]),
+          layers: [
+            new TileLayer({
+              source: new OSM(),
+            }),
+          ],
+          view: new View({
+            center: [1,1],
+            zoom: 13,
+          }),
+          target: mapRef.current,
+        });
 
-    </div>
-  );
-}
+        // Update React state for external display if needed
+        map.on('pointermove', (event) => {
+          const coordinates = map.getEventCoordinate(event.originalEvent);
+          const transformedCoordinates = createStringXY(4)(coordinates);
+          setMouseCoordinates(transformedCoordinates);
+        });
 
-export default App;
+        return () => map.setTarget(undefined); // Cleanup on component unmount
+      }, []);
+
+      return (
+        <div>
+          <div ref={mapRef} style={{ width: '100%', height: '500px' }}></div>
+          <div id="mouse-position" className="mouse-position-display">
+            Mouse Position: {mouseCoordinates}
+          </div>
+        </div>
+      );
+    };
+
+    export default MapComponent;
