@@ -5,6 +5,7 @@
     import MousePosition from 'ol/control/MousePosition';
     import { createStringXY } from 'ol/coordinate';
     import { defaults as defaultControls } from 'ol/control';
+    import { fromLonLat } from 'ol/proj';
     import 'ol/ol.css'; // Import OpenLayers CSS
 
     const MapComponent = () => {
@@ -12,6 +13,10 @@
       const [mouseCoordinates, setMouseCoordinates] = useState('');
 
       useEffect(() => {
+        const initialCenter = [-73.990, 40.75,]; // London coordinates (lon, lat)
+        const initialZoom = 13;
+
+
         const mousePositionControl = new MousePosition({
           coordinateFormat: createStringXY(4), // Format coordinates to 4 decimal places
           projection: 'EPSG:4326', // Display coordinates in Lat/Lon
@@ -21,6 +26,8 @@
         });
 
         const map = new Map({
+
+          
           controls: defaultControls().extend([mousePositionControl]),
           layers: [
             new TileLayer({
@@ -28,8 +35,8 @@
             }),
           ],
           view: new View({
-            center: [1,1],
-            zoom: 13,
+            center: fromLonLat(initialCenter),
+            zoom: initialZoom,
           }),
           target: mapRef.current,
         });
@@ -46,6 +53,11 @@
 
       return (
         <div>
+          <div>
+            <br></br>
+            Nav goers here....
+            <br />
+            </div>  
           <div ref={mapRef} style={{ width: '100%', height: '500px' }}></div>
           <div id="mouse-position" className="mouse-position-display">
             Mouse Position: {mouseCoordinates}
@@ -53,5 +65,6 @@
         </div>
       );
     };
+
 
     export default MapComponent;
