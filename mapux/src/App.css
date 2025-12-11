@@ -111,7 +111,13 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
     width: 100%;
   }
 
-
+.app-container {
+  background-color: black; /* Sets a solid background color */
+  /* OR for an image: */
+  /* background-image: url('./background.jpg'); */
+  /* background-size: cover; */
+  /* height: 100vh; Makes sure it covers the full viewport height */
+}
 
 @keyframes App-logo-spin {
   from {

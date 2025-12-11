@@ -7,91 +7,84 @@
     import { defaults as defaultControls } from 'ol/control';
     import { fromLonLat } from 'ol/proj';
     import 'bootstrap/dist/css/bootstrap.min.css';  // from 'react-bootstrap';
-    import { Container, FormControl, Card, Button } from 'react-bootstrap';
+    import { Container, FormControl, Form, Card, Button } from 'react-bootstrap';
     
     import 'ol/ol.css'; // Import OpenLayers CSS
     import './App.css';
     import ds from "./images/DeathStar.png";
 
-    const MapComponent = () => {
-      const mapRef = useRef();
-      const [mouseCoordinates, setMouseCoordinates] = useState('');
+    import OpenLayersMapComponent from './/components/OLMapComponent'
 
-      useEffect(() => {
+    const MapForm = () => {
+     
         const initialCenter = [-73.990, 40.75,]; // London coordinates (lon, lat)
-        const initialZoom = 13;
-
-
-        const mousePositionControl = new MousePosition({
-          coordinateFormat: createStringXY(4), // Format coordinates to 4 decimal places
-          projection: 'EPSG:4326', // Display coordinates in Lat/Lon
-          className: 'custom-mouse-position', // Custom class for styling
-          target: document.getElementById('mouse-position'), // Target element for display
-          undefinedHTML: '&nbsp;', // What to display when mouse leaves map
-        });
-
-        const map = new Map({
-
-          
-          controls: defaultControls().extend([mousePositionControl]),
-          layers: [
-            new TileLayer({
-              source: new OSM(),
-            }),
-          ],
-          view: new View({
-            center: fromLonLat(initialCenter),
-            zoom: initialZoom,
-          }),
-          target: mapRef.current,
-        });
-
-        // Update React state for external display if needed
-        map.on('pointermove', (event) => {
-          const coordinates = map.getEventCoordinate(event.originalEvent);
-          const transformedCoordinates = createStringXY(4)(coordinates);
-          setMouseCoordinates(transformedCoordinates);
-        });
-
-        return () => map.setTarget(undefined); // Cleanup on component unmount
-      }, []);
+        const lon = '-73.990';
+        const lat = '40.75';
+        const address = "New York City, NY";
+        const initialZoom = 19;
+        const LondonCenter = [50.543, 0.09,];
+        const newCenter = initialCenter;          
 
       return (
-        <div>
-          <div style={{ width: '100%'}}>
+        <div style={{ width: '100%'}}>
+          <div style={{ width: '100%'}} className="bg-dark mt-12 tealtext">
                 <Container className="bg-dark mt-12 tealtext">
+                        <Form> 
                         <div className="row">
                             <div className="col-sm-2">
                                 <img src={ds} height="64px"></img>
                                 <h3>DStar Maps</h3>
                             </div>
-                            <div className = "col-sm-6">
-                                
-                                        <div>
-                                            <label class="navteal">Optional: Find coordinates of an address</label>
-                                            <FormControl type="text" className="form-control-sm" />
-                                            <Button variant="primary" size="sm">Find Coordinates!</Button>
-                                        </div>  
-                            </div>                            
-                            <div class="col-sm-4">
+                            <div className = "col-sm-6">                             
                                 <div>
-                                    <label >Enter coordinates</label>
-                                    <FormControl type="text" className="form-control-sm" id="XCoord" title="X Coordinate" />
-                                    <FormControl type="text" className="form-control-sm" id="YCoord" title="Y coordinate" />
-                                    <Button variant="primary" size="sm">Show!</Button>
-                                </div>
-                            </div>
+                                    <label className="navteal">Optional: Find coordinates of an address</label>
+                                    <Form.Control 
+                                        type="text" 
+                                        className="form-control-sm"
+                                        id="Addr" 
+                                        title="Address" 
+                                        placeholder="Enter Address"
+                                        value={address}
+                                        // onChange={handleChange}
+                                        />   
+                                    <Button type='submit' variant="primary" size="sm">Find Coordinates!</Button>
+                                </div>  
+                            </div>                            
+                            <div className="col-sm-4">
+                                <div>
+                                     
+                                      <label >Enter coordinates</label>
+                                      <Form.Control 
+                                        type="text" 
+                                        className="form-control-sm" 
+                                        id="XCoord" 
+                                        title="X Coordinate" 
+                                        placeholder="Enter X Coordinate"
+                                        value={lat}
+                                        // onChange={handleChange}
+                                        />
+
+                                        <Form.Control 
+                                        type="text" 
+                                        className="form-control-sm" 
+                                        id="YCoord" 
+                                        title="Y Coordinate" 
+                                        placeholder="Enter Y Coordinate"
+                                        value={lon}
+                                        // onChange={handleChange}
+                                        />
+                                      <Button type="submit" variant="primary" size="sm">Show!</Button>
+                                </div>                            
                         </div>  
-                        <br />                                
+                        </div>
+                        </Form>                             
                 </Container>
-            </div>  
-          <div ref={mapRef} style={{ width: '100%', height: '500px' }}></div>
-          <div id="mouse-position" className="mouse-position-display">
-            Mouse Position: {mouseCoordinates}
+          </div>  
+          <div style={{ width: '100%', height: '500px' }}>
+            <OpenLayersMapComponent newCenterCoordinates={newCenter} />
           </div>
-        </div>
+        </div>         
       );
-    };
+    }
 
-
-    export default MapComponent;
+    export default MapForm;
