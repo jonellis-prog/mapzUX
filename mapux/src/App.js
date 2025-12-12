@@ -81,7 +81,7 @@
                 </Container>
           </div>  
           <div style={{ width: '100%', height: '500px' }}>
-            <OpenLayersMapComponent newCenterCoordinates={newCenter} />
+            <OpenLayersMapComponent newCenterCoordinates={newCenter} newHeight='5550px' />
           </div>
         </div>         
       );

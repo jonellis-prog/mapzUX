@@ -119,6 +119,16 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
   /* height: 100vh; Makes sure it covers the full viewport height */
 }
 
+.deep-inset {
+  border: 5px inset silver; 
+  padding: 15px; 
+  background-color: black;
+  color: silver;
+  height: 144px;
+  width: 100%;
+  font-size: small;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
