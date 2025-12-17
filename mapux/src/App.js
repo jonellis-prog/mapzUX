@@ -13,7 +13,7 @@
     import './App.css';
     import ds from "./images/DeathStar.png";
 
-    import OpenLayersMapComponent from './/components/OLMapComponent'
+    // import OpenLayersMapComponent from './/components/OLMapComponent'
 
     const MapForm = () => {
 
@@ -21,12 +21,12 @@
       
         alert('Heading to ' + LondonCenter + '  - - currently at ' + address); 
 
-        newCenter = LondonCenter; // has no effect, but at least it's being called with no page reload now
-        /// will need to re-integrate OL into App.js instead of using OpenLayersMapComponent. See AppOL.js
-        
+        setNewCenteroordinates(LondonCenter); // has no effect, but at least it's being called with no page reload now
+       /// will need to re-integrate OL into App.js instead of using OpenLayersMapComponent. See AppOL.js
+
       };
-     
-      const initialCenter = [-73.990, 40.75,]; // London coordinates (lon, lat)
+      
+      const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
       const lon = '-73.990';
       const lat = '40.75';
       const address = "New York City, NY";
@@ -34,8 +34,67 @@
       let newCenter = initialCenter; 
       
       const LondonCenter = [.1276, 51.5072];
-    
-      let addr = 'New York City NY US';      
+        
+      let addr = 'New York City NY US'; 
+      const mapRef = useRef(null);
+      const [mapInstance, setMapInstance] = useState(null);
+      let [newCenterCoordinates, setNewCenteroordinates] = useState(null);
+
+      //setNewCenteroordinates(initialCenter);
+
+      const [mouseCoordinates, setMouseCoordinates] = useState('');
+      const defaultMapHeight = '440px';
+
+      const mousePositionControl = new MousePosition({
+        coordinateFormat: createStringXY(4), // Format coordinates to 4 decimal places
+        projection: 'EPSG:4326', // Display coordinates in Lat/Lon
+        className: 'custom-mouse-position', // Custom class for styling
+        target: document.getElementById('mouse-position'), // Target element for display
+        undefinedHTML: '&nbsp;', // What to display when mouse leaves map
+      });
+
+      // 1. Initialize the map once on component mount
+      useEffect(() => {
+        const map = new Map({
+          controls: defaultControls().extend([mousePositionControl]),
+          target: mapRef.current,
+          layers: [
+            new TileLayer({
+              source: new OSM(),
+            }),
+          ],
+          view: new View({
+            center: fromLonLat(initialCenter), // Initial center
+            zoom: 11,
+          }),
+        });
+
+        setMapInstance(map);
+
+        return () => map.setTarget(undefined);
+      }, []);
+
+      // 2. Recenter the map when newCenterCoordinates prop changes
+      useEffect(() => {
+        if (!mapInstance || !newCenterCoordinates) return;
+
+        const view = mapInstance.getView();
+        // Transform coordinates from LonLat (EPSG:4326) to the map's projection (default EPSG:3857)
+        const transformedCenter = fromLonLat(newCenterCoordinates);
+
+        // Option A: Jump to the new center instantly
+        // view.setCenter(transformedCenter);
+
+        // Option B: Animate the movement to the new center
+        view.animate({
+          center: transformedCenter,
+          duration: 2000, 
+          zoom: 14, // You can also update the zoom level
+        });
+      }, [mapInstance, newCenterCoordinates]); // Depend on the map instance and the new coordinates
+
+        
+     
 
       return (
         <div style={{ width: '100%'}}>
@@ -89,9 +148,18 @@
                         </div>                            
                 </Container>
           </div>  
-          <div style={{ width: '100%', height: '500px' }}>
-            <OpenLayersMapComponent newCenterCoordinates={newCenter} />
-          </div>
+              <div>
+                <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
+                
+                <div id="mouse-position" className="mouse-position-display deep-inset" >        
+                    <p> --- <i>Notes go here</i>: Bonus = Select from POI pins <u>here</u>
+                    </p>  
+                </div> 
+              </div>
+
+                {/*           <div style={{ width: '100%', height: '500px' }}>
+                  <OpenLayersMapComponent newCenterCoordinates={newCenter} />
+                </div> */}
         </div>         
       );
     }
