@@ -21,10 +21,16 @@
       
         alert('Heading to ' + LondonCenter + '  - - currently at ' + address); 
 
-        setNewCenteroordinates(LondonCenter); // has no effect, but at least it's being called with no page reload now
+        setNewCenterCoordinates(LondonCenter); // has no effect, but at least it's being called with no page reload now
        /// will need to re-integrate OL into App.js instead of using OpenLayersMapComponent. See AppOL.js
 
       };
+
+      const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'icon';
+      link.href = '/src/deathstr.ico';
+      document.getElementsByTagName('head')[0].appendChild(link)
       
       const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
       const lon = '-73.990';
@@ -38,8 +44,11 @@
       let addr = 'New York City NY US'; 
       const mapRef = useRef(null);
       const [mapInstance, setMapInstance] = useState(null);
-      let [newCenterCoordinates, setNewCenteroordinates] = useState(null);
-
+      let [newCenterCoordinates, setNewCenterCoordinates] = useState(null);
+      
+      const [apiData, setApiData] = useState(null);
+      const [error, setError] = useState(null)
+      const [isLoading, setIsLoading] = useState(null);
       //setNewCenteroordinates(initialCenter);
 
       const [mouseCoordinates, setMouseCoordinates] = useState('');
@@ -52,6 +61,24 @@
         target: document.getElementById('mouse-position'), // Target element for display
         undefinedHTML: '&nbsp;', // What to display when mouse leaves map
       });
+
+      const fetchData = async () => {
+      try {
+        const response = await fetch('/'); // Replace with your Node.js API URL
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log(result.rows);
+        setApiData(result.rows); // Store the entire response
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+      };
+
+      fetchData();
 
       // 1. Initialize the map once on component mount
       useEffect(() => {
@@ -70,6 +97,21 @@
         });
 
         setMapInstance(map);
+
+
+        // get map data points
+/*         fetch('/')          
+          .then(response => {})
+          .then(data => {
+              setApiData(data.rows);
+              console.log(':data from API :'+apiData);
+            })
+          .catch(error => {
+            setError(error);
+            console.error("There was an error fetching the data:", error);
+          }) */
+
+          
 
         return () => map.setTarget(undefined);
       }, []);
@@ -92,9 +134,6 @@
           zoom: 14, // You can also update the zoom level
         });
       }, [mapInstance, newCenterCoordinates]); // Depend on the map instance and the new coordinates
-
-        
-     
 
       return (
         <div style={{ width: '100%'}}>
@@ -152,7 +191,8 @@
                 <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
                 
                 <div id="mouse-position" className="mouse-position-display deep-inset" >        
-                    <p> --- <i>Notes go here</i>: Bonus = Select from POI pins <u>here</u>
+                    <p> --- Data <i>{apiData}</i></p>
+                    <p>: Bonus = Select from POI pins <u>here</u>
                     </p>  
                 </div> 
               </div>
