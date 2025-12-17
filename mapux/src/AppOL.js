@@ -13,7 +13,7 @@
     import './App.css';
     import ds from "./images/DeathStar.png";
 
-    import OpenLayersMapComponent from './/components/OLMapComponent'
+    import OpenLayersMapComponent from './components/OLMapComponent'
 
     const MapForm = () => {
 

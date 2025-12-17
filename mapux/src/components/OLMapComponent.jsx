@@ -11,7 +11,7 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 import { defaults as defaultControls } from 'ol/control';
 
-const OpenLayersMapComponent = ({ newCenterCoordinates, mapHeight }) => {
+const OpenLayersMapComponent = ({ newCenterCoordinates }) => {
   const mapRef = useRef(null);
   const [mapInstance, setMapInstance] = useState(null);
   const [mouseCoordinates, setMouseCoordinates] = useState('');
@@ -25,9 +25,6 @@ const OpenLayersMapComponent = ({ newCenterCoordinates, mapHeight }) => {
     undefinedHTML: '&nbsp;', // What to display when mouse leaves map
   });
 
-  if (!mapHeight) {
-      mapHeight = defaultMapHeight;
-  }
   // 1. Initialize the map once on component mount
   useEffect(() => {
     const map = new Map({
@@ -70,10 +67,10 @@ const OpenLayersMapComponent = ({ newCenterCoordinates, mapHeight }) => {
 
   return (
     <div>
-      <div ref={mapRef} style={{ width: "100%", height: mapHeight }} >{mouseCoordinates}</div>
+      <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
        
       <div id="mouse-position" className="mouse-position-display deep-inset" >        
-          <p> --- <i>Notes go here</i>
+          <p> --- <i>Notes go here</i>: Bonus = Select from POI pins <u>here</u>
           </p>  
       </div> 
     </div>
