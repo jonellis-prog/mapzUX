@@ -64,13 +64,13 @@
 
       const fetchData = async () => {
       try {
-        const response = await fetch('/'); // Replace with your Node.js API URL
+        const response = await fetch('/maps'); // Replace with your Node.js API URL
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.json();
-        console.log(result.rows);
-        setApiData(result.rows); // Store the entire response
+        const result = await response.json();        
+        setApiData(JSON.stringify(result)); // Store the entire response
+        //alert(apiData);
       } catch (err) {
         setError(err.message);
       } finally {
