@@ -13,18 +13,7 @@
     import './App.css';
     import ds from "./images/DeathStar.png";
 
-    // import OpenLayersMapComponent from './/components/OLMapComponent'
-
     const MapForm = () => {
-
-      function handleSubmit() {
-      
-        alert('Heading to ' + LondonCenter + '  - - currently at ' + address); 
-
-        setNewCenterCoordinates(LondonCenter); // has no effect, but at least it's being called with no page reload now
-       /// will need to re-integrate OL into App.js instead of using OpenLayersMapComponent. See AppOL.js
-
-      };
 
       const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
       link.type = 'image/x-icon';
@@ -33,9 +22,12 @@
       document.getElementsByTagName('head')[0].appendChild(link)
       
       const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
-      const lon = '-73.990';
-      const lat = '40.75';
-      const address = "New York City, NY";
+      const [lon, setLon] = useState('');
+      setLon('-73.990');
+      const [lat, setLat] = useState('');
+      setLat('40.75');
+      const [address, setAddress] = useState('');
+      setAddress("New York City, NY");
       const initialZoom = 19; 
       let newCenter = initialCenter; 
       
@@ -49,7 +41,7 @@
       const [apiData, setApiData] = useState(null);
       const [error, setError] = useState(null)
       const [isLoading, setIsLoading] = useState(null);
-      //setNewCenteroordinates(initialCenter);
+      
 
       const [mouseCoordinates, setMouseCoordinates] = useState('');
       const defaultMapHeight = '440px';
@@ -63,22 +55,51 @@
       });
 
       const fetchData = async () => {
-      try {
-        const response = await fetch('/'); // Replace with your Node.js API URL
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+          const response = await fetch('/maps'); // Replace with your Node.js API URL
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          // alert(JSON.stringify(data));
+          //setNewCenterCoordinates(initialCenter);
+          setApiData(JSON.stringify(data.rows)); // Store the entire response
+        } catch (err) {
+          setError(err.message);
+          alert(err.message);
+        } finally {
+          setIsLoading(false);
         }
-        const result = await response.json();
-        console.log(result.rows);
-        setApiData(result.rows); // Store the entire response
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
       };
 
       fetchData();
+
+      function handleShowSubmit() {      
+        setNewCenterCoordinates(LondonCenter);
+      };
+
+      function handleAddressSubmitNYC() {         
+        setNewCenterCoordinates(initialCenter);
+      };
+
+      function handleAddressSubmitLondon() {      
+        setNewCenterCoordinates(initialCenter);
+      };
+
+      const handleChangeAddr = (e) => {
+        e.PreventDefault();
+        setAddress(e.target.value);
+      };
+
+      const handleChangeLon = (e) => {
+        e.PreventDefault();
+        setLon(e.target.value);
+      };
+
+      const handleChangeLat = (e) => {
+        e.PreventDefault();
+        setLat(e.target.value);
+      };
 
       // 1. Initialize the map once on component mount
       useEffect(() => {
@@ -96,22 +117,7 @@
           }),
         });
 
-        setMapInstance(map);
-
-
-        // get map data points
-/*         fetch('/')          
-          .then(response => {})
-          .then(data => {
-              setApiData(data.rows);
-              console.log(':data from API :'+apiData);
-            })
-          .catch(error => {
-            setError(error);
-            console.error("There was an error fetching the data:", error);
-          }) */
-
-          
+        setMapInstance(map);        
 
         return () => map.setTarget(undefined);
       }, []);
@@ -154,8 +160,13 @@
                                         title="Address" 
                                         placeholder="Enter Address"
                                         value={address}
+                                        onChange={handleChangeAddr}
                                         />   
-                                    <Button type='submit' variant="primary" size="sm">Find Coordinates!</Button>
+                                    <Button type='button' onClick={handleAddressSubmitNYC}  variant="primary" size="sm">Find Coordinates!</Button>
+                                    <Button type='button' onClick={handleAddressSubmitLondon}  variant="success" size="sm">Go 2 NYC</Button>
+                                    <Button type='button' onClick={handleShowSubmit}  variant="warning" size="sm">Go 2 London</Button>
+  
+                                
                                 </div>  
                             </div>                            
                             <div className="col-sm-4">
@@ -165,23 +176,23 @@
                                       <Form.Control 
                                         type="text" 
                                         className="form-control-sm" 
-                                        id="XCoord" 
-                                        title="X Coordinate" 
-                                        placeholder="Enter X Coordinate"
+                                        id="lat" 
+                                        title="latitutde" 
+                                        placeholder="latitude"
                                         value={lat}
-                                        // onChange={handleChange}
+                                        onChange={handleChangeLat}
                                         />
 
                                         <Form.Control 
                                         type="text" 
                                         className="form-control-sm" 
-                                        id="YCoord" 
-                                        title="Y Coordinate" 
-                                        placeholder="Enter Y Coordinate"
+                                        id="lon" 
+                                        title="longitude" 
+                                        placeholder="longitude"
                                         value={lon}
-                                        // onChange={handleChange}
+                                        onChange={handleChangeLon}
                                         />
-                                      <Button type="submit" onClick={handleSubmit} variant="primary" size="sm">Show!</Button>
+                                      <Button type="button"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
                                 </div>                            
                         </div>  
                         </div>                            
@@ -196,10 +207,6 @@
                     </p>  
                 </div> 
               </div>
-
-                {/*           <div style={{ width: '100%', height: '500px' }}>
-                  <OpenLayersMapComponent newCenterCoordinates={newCenter} />
-                </div> */}
         </div>         
       );
     }
