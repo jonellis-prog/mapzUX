@@ -13,9 +13,8 @@
     import './App.css';
     import ds from "./images/DeathStar.png";
 
-    // import OpenLayersMapComponent from './/components/OLMapComponent'
-
     const MapForm = () => {
+
 
       const handleMapClick= (event) => {
           // e.preventDefault(); // Prevents the default browser context menu
@@ -60,6 +59,7 @@
       
       };
 
+
       const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'icon';
@@ -67,9 +67,18 @@
       document.getElementsByTagName('head')[0].appendChild(link)
       
       const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
+
+      const [lon, setLon] = useState('');
+      setLon('-73.990');
+      const [lat, setLat] = useState('');
+      setLat('40.75');
+      const [address, setAddress] = useState('');
+      setAddress("New York City, NY");
+
       let lon = '-73.990';
       let lat = '40.75';
       let address = "New York City, NY";
+
       const initialZoom = 19; 
       let newCenter = initialCenter; 
       
@@ -84,7 +93,7 @@
       const [apiData, setApiData] = useState(null);
       const [error, setError] = useState(null)
       const [isLoading, setIsLoading] = useState(null);
-      //setNewCenteroordinates(initialCenter);
+      
 
       const [mouseCoordinates, setMouseCoordinates] = useState('');
       const defaultMapHeight = '440px';
@@ -98,39 +107,6 @@
       });
 
       const fetchData = async () => {
-      try {
-        const response = await fetch('/maps'); // Replace with your Node.js API URL
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();        
-        setApiData(JSON.stringify(result)); // Store the entire response
-        //alert(apiData);  //JFE
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-      };
-
-      fetchData();
-
-      // 1. Initialize the map once on component mount
-      useEffect(() => {
-        const map = new Map({
-          controls: defaultControls().extend([mousePositionControl]),
-          target: mapRef.current,
-          layers: [
-            new TileLayer({
-              source: new OSM(),
-            }),
-          ],
-          view: new View({
-            center: fromLonLat(initialCenter), // Initial center
-            zoom: 5,
-          }),
-        });
-
         setMapInstance(map);
 
         return () => map.setTarget(undefined);
@@ -199,7 +175,7 @@
                                         placeholder="Enter Longitude Coordinate"
                                         onChange={handleChangeLon}
                                         />
-                                      <Button type="submit" onClick={handleSubmit} variant="primary" size="sm">Show!</Button>
+                                      <Button type="button"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
                                 </div>                            
                         </div>  
                         </div>                            
