@@ -7,7 +7,7 @@
     import { defaults as defaultControls } from 'ol/control';
     import { fromLonLat } from 'ol/proj';
     import 'bootstrap/dist/css/bootstrap.min.css';  // from 'react-bootstrap';
-    import { Container, FormControl, Form, Card, Button } from 'react-bootstrap';
+    import { Container, FormControl, Form, Card, Button, DropdownButton, DropdownItem, Dropdown } from 'react-bootstrap';
     
     import 'ol/ol.css'; // Import OpenLayers CSS
     import './App.css';
@@ -19,11 +19,20 @@
 
       function handleSubmit() {
       
-        alert('Heading to ' + LondonCenter + '  - - currently at ' + address); 
+        alert('Heading to London: ' + LondonCenter ); 
+        setNewCenterCoordinates(LondonCenter); 
+        lon = .1279;
+        lat = 50.150;
+        address = "London, England UK";
+      };
 
-        setNewCenterCoordinates(LondonCenter); // has no effect, but at least it's being called with no page reload now
-       /// will need to re-integrate OL into App.js instead of using OpenLayersMapComponent. See AppOL.js
-
+      function handleSubmitNYC() {
+      
+        alert('Heading to NYC USA: ' + initialCenter ); 
+        setNewCenterCoordinates(initialCenter); 
+        lon = .1279;
+        lat = 50.150;
+        address = "London, England UK";
       };
 
       const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
@@ -33,9 +42,9 @@
       document.getElementsByTagName('head')[0].appendChild(link)
       
       const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
-      const lon = '-73.990';
-      const lat = '40.75';
-      const address = "New York City, NY";
+      let lon = '-73.990';
+      let lat = '40.75';
+      let address = "New York City, NY";
       const initialZoom = 19; 
       let newCenter = initialCenter; 
       
@@ -99,19 +108,7 @@
         setMapInstance(map);
 
 
-        // get map data points
-/*         fetch('/')          
-          .then(response => {})
-          .then(data => {
-              setApiData(data.rows);
-              console.log(':data from API :'+apiData);
-            })
-          .catch(error => {
-            setError(error);
-            console.error("There was an error fetching the data:", error);
-          }) */
-
-          
+       
 
         return () => map.setTarget(undefined);
       }, []);
@@ -156,6 +153,11 @@
                                         value={address}
                                         />   
                                     <Button type='submit' variant="primary" size="sm">Find Coordinates!</Button>
+                                    <DropdownButton id="dropdown-basic-button" title="Favorite Destinations">
+                                      <Dropdown.Item onClick={handleSubmit}>London</Dropdown.Item>
+                                      <Dropdown.Item onClick={handleSubmitNYC}>New York City</Dropdown.Item>
+                                      <Dropdown.Item >Saint Louis(soon)</Dropdown.Item>
+                                    </DropdownButton>
                                 </div>  
                             </div>                            
                             <div className="col-sm-4">
