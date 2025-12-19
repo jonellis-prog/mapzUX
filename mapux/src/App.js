@@ -6,25 +6,31 @@
     import { createStringXY } from 'ol/coordinate';
     import { defaults as defaultControls } from 'ol/control';
     import { fromLonLat } from 'ol/proj';
-    import 'bootstrap/dist/css/bootstrap.min.css';  // from 'react-bootstrap';
-    import { Container, FormControl, Form, Card, Button } from 'react-bootstrap';
+    import 'bootstrap/dist/css/bootstrap.min.css';  
+    import { Container, FormControl, Form, Button, Dropdown, DropdownButton } from 'react-bootstrap';
     
-    import 'ol/ol.css'; // Import OpenLayers CSS
+    import 'ol/ol.css'; 
     import './App.css';
     import ds from "./images/DeathStar.png";
-
-    // import OpenLayersMapComponent from './/components/OLMapComponent'
 
     const MapForm = () => {
 
       function handleSubmit() {
-      
-        alert('Heading to ' + LondonCenter + '  - - currently at ' + address); 
-
-        setNewCenterCoordinates(LondonCenter); // has no effect, but at least it's being called with no page reload now
-       /// will need to re-integrate OL into App.js instead of using OpenLayersMapComponent. See AppOL.js
-
+        alert('Heading to London England: ' + LondonCenter ); 
+        setIsLoading()
+        setNewCenterCoordinates(LondonCenter); 
+        setAddress("London, England, UK");
+        setLon(.1276);
+        setLat(51.5072);
       };
+
+      function handleSubmitNYC() {
+        alert('Heading to NYC! :' + initialCenter);
+        setNewCenterCoordinates(initialCenter);
+        setAddress("NYC USA");
+        setLon(-73.990);
+        setLat(40.75);        
+      }
 
       const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
       link.type = 'image/x-icon';
@@ -32,10 +38,17 @@
       link.href = '/src/deathstr.ico';
       document.getElementsByTagName('head')[0].appendChild(link)
       
-      const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
-      const lon = '-73.990';
-      const lat = '40.75';
-      const address = "New York City, NY";
+      
+      const [lon, setLon] = useState(null);
+      setLon(-73.990);
+
+      const [lat, setLat] = useState(null);
+      setLat(40.75);
+
+      const initialCenter = [lon, lat]; // London coordinates (lon, lat)
+      const [address, setAddress] = useState(null);
+      setAddress("New York City, NY");
+
       const initialZoom = 19; 
       let newCenter = initialCenter; 
       
@@ -63,6 +76,7 @@
       });
 
       const fetchData = async () => {
+      //alert('Starting DB Access'); //JFE
       try {
         const response = await fetch('/maps'); // Replace with your Node.js API URL
         if (!response.ok) {
@@ -70,12 +84,13 @@
         }
         const result = await response.json();        
         setApiData(JSON.stringify(result)); // Store the entire response
-        //alert(apiData);
+        //alert(apiData);  //JFE
       } catch (err) {
         setError(err.message);
       } finally {
         setIsLoading(false);
       }
+      //alert('Done with DB'); //JFE
       };
 
       fetchData();
@@ -155,7 +170,13 @@
                                         placeholder="Enter Address"
                                         value={address}
                                         />   
-                                    <Button type='submit' variant="primary" size="sm">Find Coordinates!</Button>
+                                    <Button type='button' variant="primary" size="sm">Find Coordinates!</Button>
+                                                 
+                                    <DropdownButton id="dropdown-basic-button" title="Favorite Destinations">
+                                      <Dropdown.Item onClick={handleSubmit}>London</Dropdown.Item>
+                                      <Dropdown.Item onClick={handleSubmitNYC}>New York City</Dropdown.Item>
+                                      <Dropdown.Item >Saint Louis(soon)</Dropdown.Item>
+                                    </DropdownButton>
                                 </div>  
                             </div>                            
                             <div className="col-sm-4">
@@ -184,23 +205,19 @@
                                       <Button type="submit" onClick={handleSubmit} variant="primary" size="sm">Show!</Button>
                                 </div>                            
                         </div>  
-                        </div>                            
+                        </div>                                               
                 </Container>
           </div>  
               <div>
-                <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
-                
-                <div id="mouse-position" className="mouse-position-display deep-inset" >        
+                <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}
+
+                </div>
                     <p> --- Data <i>{apiData}</i></p>
                     <p>: Bonus = Select from POI pins <u>here</u>
                     </p>  
                 </div> 
               </div>
 
-                {/*           <div style={{ width: '100%', height: '500px' }}>
-                  <OpenLayersMapComponent newCenterCoordinates={newCenter} />
-                </div> */}
-        </div>         
       );
     }
 
