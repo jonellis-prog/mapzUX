@@ -17,22 +17,47 @@
 
     const MapForm = () => {
 
-      function handleSubmit() {
-      
-        alert('Heading to London: ' + LondonCenter ); 
+      const handleMapClick= (event) => {
+          // e.preventDefault(); // Prevents the default browser context menu
+          console.log('Right-clicked on map container');
+          alert({mouseCoordinates});
+          console.log(event.mouseCoordinates);
+          // You can access native event properties or the map instance here
+            // Example: Do something with coordinates
+            // const coordinate = mapInstance.getCoordinateFromPixel(pixel);
+            // console.log('Coordinate:', coordinate); 
+          
+
+          // Add your custom logic here (e.g., display a custom menu)
+        };
+
+      function handleSubmit() {              
         setNewCenterCoordinates(LondonCenter); 
         lon = .1279;
         lat = 50.150;
         address = "London, England UK";
       };
 
-      function handleSubmitNYC() {
-      
-        alert('Heading to NYC USA: ' + initialCenter ); 
+      function handleSubmitNYC() {    
         setNewCenterCoordinates(initialCenter); 
-        lon = .1279;
-        lat = 50.150;
         address = "London, England UK";
+      };
+
+       function handleSubmitSTL() {
+        setNewCenterCoordinates(STLCenter); 
+        address = "Saint Louis, MO USA";
+      };
+
+      function handleChangeAddress() {
+      
+      };
+
+      function handleChangeLat() {
+
+      };
+
+      function handleChangeLon() {
+      
       };
 
       const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
@@ -49,6 +74,7 @@
       let newCenter = initialCenter; 
       
       const LondonCenter = [.1276, 51.5072];
+      const STLCenter = [ -90.1994, 38.6270,];
         
       let addr = 'New York City NY US'; 
       const mapRef = useRef(null);
@@ -79,7 +105,7 @@
         }
         const result = await response.json();        
         setApiData(JSON.stringify(result)); // Store the entire response
-        //alert(apiData);
+        //alert(apiData);  //JFE
       } catch (err) {
         setError(err.message);
       } finally {
@@ -101,14 +127,11 @@
           ],
           view: new View({
             center: fromLonLat(initialCenter), // Initial center
-            zoom: 11,
+            zoom: 5,
           }),
         });
 
         setMapInstance(map);
-
-
-       
 
         return () => map.setTarget(undefined);
       }, []);
@@ -120,15 +143,10 @@
         const view = mapInstance.getView();
         // Transform coordinates from LonLat (EPSG:4326) to the map's projection (default EPSG:3857)
         const transformedCenter = fromLonLat(newCenterCoordinates);
-
-        // Option A: Jump to the new center instantly
-        // view.setCenter(transformedCenter);
-
-        // Option B: Animate the movement to the new center
         view.animate({
           center: transformedCenter,
           duration: 2000, 
-          zoom: 14, // You can also update the zoom level
+          zoom: 12, // You can also update the zoom level
         });
       }, [mapInstance, newCenterCoordinates]); // Depend on the map instance and the new coordinates
 
@@ -150,13 +168,13 @@
                                         id="Addr" 
                                         title="Address" 
                                         placeholder="Enter Address"
-                                        value={address}
+                                        onChange={handleChangeAddress}
                                         />   
-                                    <Button type='submit' variant="primary" size="sm">Find Coordinates!</Button>
-                                    <DropdownButton id="dropdown-basic-button" title="Favorite Destinations">
+                                    <Button type='submit' variant="primary" size="sm" title='Future Use'>Find Coordinates!</Button>
+                                    <DropdownButton id="dropdown-basic-button" variant="info" title="Favorite Destinations">
                                       <Dropdown.Item onClick={handleSubmit}>London</Dropdown.Item>
                                       <Dropdown.Item onClick={handleSubmitNYC}>New York City</Dropdown.Item>
-                                      <Dropdown.Item >Saint Louis(soon)</Dropdown.Item>
+                                      <Dropdown.Item onClick={handleSubmitSTL}>Saint Louis</Dropdown.Item>
                                     </DropdownButton>
                                 </div>  
                             </div>                            
@@ -167,21 +185,19 @@
                                       <Form.Control 
                                         type="text" 
                                         className="form-control-sm" 
-                                        id="XCoord" 
-                                        title="X Coordinate" 
-                                        placeholder="Enter X Coordinate"
-                                        value={lat}
-                                        // onChange={handleChange}
+                                        id="lat" 
+                                        title="Latitude" 
+                                        placeholder="Enter Latitude"
+                                        onChange={handleChangeLat}
                                         />
 
                                         <Form.Control 
                                         type="text" 
                                         className="form-control-sm" 
-                                        id="YCoord" 
-                                        title="Y Coordinate" 
-                                        placeholder="Enter Y Coordinate"
-                                        value={lon}
-                                        // onChange={handleChange}
+                                        id="lon" 
+                                        title="Longitude" 
+                                        placeholder="Enter Longitude Coordinate"
+                                        onChange={handleChangeLon}
                                         />
                                       <Button type="submit" onClick={handleSubmit} variant="primary" size="sm">Show!</Button>
                                 </div>                            
@@ -190,18 +206,14 @@
                 </Container>
           </div>  
               <div>
-                <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
+                <div ref={mapRef} onContextMenu={handleMapClick} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
                 
                 <div id="mouse-position" className="mouse-position-display deep-inset" >        
-                    <p> --- Data <i>{apiData}</i></p>
-                    <p>: Bonus = Select from POI pins <u>here</u>
-                    </p>  
+                    <p> --- Data <i>{apiData}</i></p>         
                 </div> 
               </div>
 
-                {/*           <div style={{ width: '100%', height: '500px' }}>
-                  <OpenLayersMapComponent newCenterCoordinates={newCenter} />
-                </div> */}
+
         </div>         
       );
     }
