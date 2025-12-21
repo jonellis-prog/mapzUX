@@ -15,36 +15,16 @@
 
     const MapForm = () => {
 
-
-      const handleMapClick= (event) => {
-          // e.preventDefault(); // Prevents the default browser context menu
-          console.log('Right-clicked on map container');
-          alert({mouseCoordinates});
-          console.log(event.mouseCoordinates);
-          // You can access native event properties or the map instance here
-            // Example: Do something with coordinates
-            // const coordinate = mapInstance.getCoordinateFromPixel(pixel);
-            // console.log('Coordinate:', coordinate); 
-          
-
-          // Add your custom logic here (e.g., display a custom menu)
-        };
-
       function handleSubmit() {              
         setNewCenterCoordinates(LondonCenter); 
-        lon = .1279;
-        lat = 50.150;
-        address = "London, England UK";
       };
 
       function handleSubmitNYC() {    
         setNewCenterCoordinates(initialCenter); 
-        address = "London, England UK";
       };
 
        function handleSubmitSTL() {
         setNewCenterCoordinates(STLCenter); 
-        address = "Saint Louis, MO USA";
       };
 
       function handleChangeAddress() {
@@ -68,18 +48,7 @@
       
       const initialCenter = [-73.990, 40.75]; // London coordinates (lon, lat)
 
-      const [lon, setLon] = useState('');
-      setLon('-73.990');
-      const [lat, setLat] = useState('');
-      setLat('40.75');
-      const [address, setAddress] = useState('');
-      setAddress("New York City, NY");
-
-      let lon = '-73.990';
-      let lat = '40.75';
-      let address = "New York City, NY";
-
-      const initialZoom = 19; 
+      const initialZoom = 15; 
       let newCenter = initialCenter; 
       
       const LondonCenter = [.1276, 51.5072];
@@ -88,12 +57,7 @@
       let addr = 'New York City NY US'; 
       const mapRef = useRef(null);
       const [mapInstance, setMapInstance] = useState(null);
-      let [newCenterCoordinates, setNewCenterCoordinates] = useState(null);
-      
-      const [apiData, setApiData] = useState(null);
-      const [error, setError] = useState(null)
-      const [isLoading, setIsLoading] = useState(null);
-      
+      let [newCenterCoordinates, setNewCenterCoordinates] = useState(null)
 
       const [mouseCoordinates, setMouseCoordinates] = useState('');
       const defaultMapHeight = '440px';
@@ -106,11 +70,39 @@
         undefinedHTML: '&nbsp;', // What to display when mouse leaves map
       });
 
-      const fetchData = async () => {
-        setMapInstance(map);
+      useEffect(() => {
+        const mousePositionControl = new MousePosition({
+          coordinateFormat: createStringXY(4), // Format coordinates to 4 decimal places
+          projection: 'EPSG:4326', // Display coordinates in Lat/Lon
+          className: 'custom-mouse-position', // Custom class for styling
+          target: document.getElementById('mouse-position'), // Target element for display
+          undefinedHTML: '&nbsp;', // What to display when mouse leaves map
+        });
 
-        return () => map.setTarget(undefined);
+        const map = new Map({
+          controls: defaultControls(), // .extend([mousePositionControl]),
+          layers: [
+            new TileLayer({
+              source: new OSM(),
+            }),
+          ],
+          view: new View({
+            center: initialCenter,
+            zoom: 2,
+          }),
+          target: mapRef.current,
+        });
+
+        // Update React state for external display if needed
+ /*        map.on('pointermove', (event) => {
+          const coordinates = map.getEventCoordinate(event.originalEvent);
+          const transformedCoordinates = createStringXY(4)(coordinates);
+          setMouseCoordinates(transformedCoordinates);
+        }); */
+
+        return () => map.setTarget(undefined); // Cleanup on component unmount
       }, []);
+
 
       // 2. Recenter the map when newCenterCoordinates prop changes
       useEffect(() => {
@@ -144,7 +136,6 @@
                                         id="Addr" 
                                         title="Address" 
                                         placeholder="Enter Address"
-                                        onChange={handleChangeAddress}
                                         />   
                                     <Button type='submit' variant="primary" size="sm" title='Future Use'>Find Coordinates!</Button>
                                     <DropdownButton id="dropdown-basic-button" variant="info" title="Favorite Destinations">
@@ -164,7 +155,6 @@
                                         id="lat" 
                                         title="Latitude" 
                                         placeholder="Enter Latitude"
-                                        onChange={handleChangeLat}
                                         />
 
                                         <Form.Control 
@@ -173,7 +163,6 @@
                                         id="lon" 
                                         title="Longitude" 
                                         placeholder="Enter Longitude Coordinate"
-                                        onChange={handleChangeLon}
                                         />
                                       <Button type="button"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
                                 </div>                            
@@ -182,10 +171,10 @@
                 </Container>
           </div>  
               <div>
-                <div ref={mapRef} onContextMenu={handleMapClick} style={{ width: "100%", height: defaultMapHeight }} >{mouseCoordinates}</div>
+                <div ref={mapRef} style={{ width: "100%", height: defaultMapHeight }} ></div>
                 
-                <div id="mouse-position" className="mouse-position-display deep-inset" >        
-                    <p> --- Data <i>{apiData}</i></p>         
+                <div id="mouse-info" className="deep-inset" >        
+                    <p> --- info<i></i></p>         
                 </div> 
               </div>
 
