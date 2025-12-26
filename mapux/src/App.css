@@ -111,22 +111,10 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
     width: 100%;
   }
 
-.app-container {
-  background-color: black; /* Sets a solid background color */
-  /* OR for an image: */
-  /* background-image: url('./background.jpg'); */
-  /* background-size: cover; */
-  /* height: 100vh; Makes sure it covers the full viewport height */
-}
-
-.deep-inset {
-  border: 5px inset silver; 
-  padding: 15px; 
-  background-color: black;
-  color: silver;
-  height: 144px;
-  width: 100%;
-  font-size: small;
+.dataShowSmall {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: xx-small;
+    color: gray;
 }
 
 @keyframes App-logo-spin {
