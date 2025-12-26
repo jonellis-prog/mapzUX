@@ -2,13 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
-import { fromLonLat } from 'ol/proj';
+import { fromLonLat} from 'ol/proj';
 import 'ol/ol.css';
+
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { Container, FormControl, Form, Card, Button, DropdownButton, DropdownItem, Dropdown} from 'react-bootstrap';
-import geodata from './geodata.json'; 
+
 import './App.css';
 import ds from "./images/DeathStar.png"
+
+import geodata from './geodata.json'; 
 
 const MapComponent = () => {
   // 1. Manage center and zoom with state
@@ -142,7 +145,7 @@ const MapComponent = () => {
                         <div className="col-sm-4">
                             <div>
                                 <Form onSubmit={handleSubmitCoords}>
-                                  <label >Enter coordinates</label>
+                                  <label >Enter Exact GPS coordinates (Expert Mode)</label>
                                   <Form.Control 
                                     type="text" 
                                     className="form-control-sm" 
@@ -171,7 +174,7 @@ const MapComponent = () => {
       {/* The div where OpenLayers renders the map */}
       <div ref={mapRef} style={{ width: '100%', height: '440px' }} />
       <hr></hr>
-      <div><p class="dataShowSmall">{jsondata}</p> <p className="stealthBlack">Found: {center}</p> </div>
+      <div><p class="dataShowSmall">{jsondata}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>
     </div>
   );
 };
