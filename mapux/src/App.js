@@ -40,11 +40,17 @@ const MapComponent = () => {
   const handleSelect = (key) => {
     alert(key);
     //setSelectedValue(eventKey);
-    const Venice = [12.338, 45.434];
+    const newLoc = geodata.find(loc => 
+       loc.location === key);
+
+    
+    
+    // const Venice = [12.338, 45.434];
 
     // find the lonlatzoom from the JSON Data
 
-    setCenter(fromLonLat(Venice));
+    setCenter(fromLonLat([newLoc.lon, newLoc.lat]));
+    setZoom(newLoc.zoom);
   }
 
   // 3. Create a function to change the center
@@ -78,10 +84,9 @@ const MapComponent = () => {
           onSelect={(eventKey) =>handleSelect(eventKey)}
           id="dropdown-basic-button" variant="info" 
           title={selectedValue === 'None Selected' ? 'Select an Option' : selectedValue}>
-
-        <Dropdown.Item eventKey="London">London</Dropdown.Item>
-        <Dropdown.Item eventKey="Venice" onClick={() => changeMapCenter([12.338, 45.434], 12)}>Venice</Dropdown.Item>
-        <Dropdown.Item eventKey="STL">Saint Louis</Dropdown.Item>
+          {geodata.map((loc) => (
+            <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>
+          ))}
       </DropdownButton>
 
       {/* The div where OpenLayers renders the map */}
