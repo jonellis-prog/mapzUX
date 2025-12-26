@@ -1,0 +1,37 @@
+[{
+        "id": 1,
+        "location": "NYC",
+        "description": "New York City, NY USA",
+        "lat": -73.990,
+        "lon": 40.75,
+        "zoom": 12,
+        "flightprice": 1150
+    },
+   {
+        "id": 2,
+        "location": "Venice",
+        "description": "New York City, NY USA",
+        "lat": 51.5072,
+        "lon": 0.1276,
+        "zoom": 14,
+        "flightprice": 1150
+    },
+    {
+        "id": 3,
+        "location": "London",
+        "description": "New York City, NY USA",
+        "lat": 0.1276, 
+        "lon": 51.5072,
+        "zoom": 10,
+        "flightprice": 1150
+    },
+        {
+        "id": 4,
+        "location": "STL",
+        "description": "Sain Louis, MO USA",
+        "lat": -90.1994,
+        "lon": 38.6720,
+        "zoom": 13,
+        "flightprice": 1150
+    }
+]
