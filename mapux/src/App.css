@@ -111,7 +111,11 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
     width: 100%;
   }
 
-
+.dataShowSmall {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: xx-small;
+    color: gray;
+}
 
 @keyframes App-logo-spin {
   from {

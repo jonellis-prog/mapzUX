@@ -6,11 +6,13 @@ import { fromLonLat } from 'ol/proj';
 import 'ol/ol.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { Container, FormControl, Form, Card, Button, DropdownButton, DropdownItem, Dropdown} from 'react-bootstrap';
-import geodata from './geodata.json'; // Import the JSON file
+import geodata from './geodata.json'; 
+import './App.css';
+import ds from "./images/DeathStar.png"
 
 const MapComponent = () => {
   // 1. Manage center and zoom with state
-  const [center, setCenter] = useState(fromLonLat([0, 0])); // Initial center (e.g., [longitude, latitude])
+  const [center, setCenter] = useState(fromLonLat([0, 0])); 
   const [zoom, setZoom] = useState(2);
   const mapRef = useRef(null);
   const olMap = useRef(null);
@@ -42,13 +44,6 @@ const MapComponent = () => {
     //setSelectedValue(eventKey);
     const newLoc = geodata.find(loc => 
        loc.location === key);
-
-    
-    
-    // const Venice = [12.338, 45.434];
-
-    // find the lonlatzoom from the JSON Data
-
     setCenter(fromLonLat([newLoc.lon, newLoc.lat]));
     setZoom(newLoc.zoom);
   }
@@ -74,25 +69,66 @@ const MapComponent = () => {
   
   return (
     <div>
-      <button onClick={() => changeMapCenter([-74.006, 40.7128], 10)}>
-        Go to New York
-      </button>
-      <button onClick={() => changeMapCenter([12.338, 45.434], 12)}>
-        Go to Venice
-      </button>
-      <DropdownButton
-          onSelect={(eventKey) =>handleSelect(eventKey)}
-          id="dropdown-basic-button" variant="info" 
-          title={selectedValue === 'None Selected' ? 'Select an Option' : selectedValue}>
-          {geodata.map((loc) => (
-            <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>
-          ))}
-      </DropdownButton>
+
+      <div style={{ width: '100%'}} className="bg-dark mt-12 tealtext">
+            <Container className="bg-dark mt-12 tealtext">                        
+                    <div className="row">
+                        <div className="col-sm-2">
+                            <img src={ds} height="64px"></img>
+                            <h3>DStar Maps</h3>
+                        </div>
+                        <div className = "col-sm-6">                             
+                            <div>
+                                <label className="navteal">Optional: Find coordinates of an address</label>
+                                <Form.Control 
+                                    type="text" 
+                                    className="form-control-sm"
+                                    id="Addr" 
+                                    title="Address" 
+                                    placeholder="Enter Address"
+                                    //onChange={handleChangeAddress}
+                                    />   
+                                <Button type='submit' variant="primary" size="sm" title='Future Use'>Find Coordinates!</Button>
+                                <DropdownButton
+                                    onSelect={(eventKey) =>handleSelect(eventKey)}
+                                    id="dropdown-basic-button" variant="info" 
+                                    title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
+                                    {geodata.map((loc) => (
+                                      <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>
+                                    ))}
+                                </DropdownButton>
+                            </div>  
+                        </div>                            
+                        <div className="col-sm-4">
+                            <div>
+                                  
+                                  <label >Enter coordinates</label>
+                                  <Form.Control 
+                                    type="text" 
+                                    className="form-control-sm" 
+                                    id="lat" 
+                                    title="Latitude" 
+                                    placeholder="Enter Latitude"
+                                    />
+
+                                    <Form.Control 
+                                    type="text" 
+                                    className="form-control-sm" 
+                                    id="lon" 
+                                    title="Longitude" 
+                                    placeholder="Enter Longitude Coordinate"
+                                    />
+                                  <Button type="button"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
+                            </div>                            
+                    </div>  
+                    </div>                            
+            </Container>
+      </div> 
 
       {/* The div where OpenLayers renders the map */}
       <div ref={mapRef} style={{ width: '100%', height: '600px' }} />
       <hr></hr>
-      <div><p>{jsondata}</p></div>
+      <div><p class="dataShowSmall">{jsondata}</p></div>
     </div>
   );
 };
