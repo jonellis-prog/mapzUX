@@ -117,6 +117,10 @@ max-width: 80%; /* Ensure it doesn't exceed 45% */
     color: gray;
 }
 
+.stealthBlack {
+  color:black
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

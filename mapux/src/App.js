@@ -14,6 +14,7 @@ const MapComponent = () => {
   // 1. Manage center and zoom with state
   const [center, setCenter] = useState(fromLonLat([0, 0])); 
   const [zoom, setZoom] = useState(2);
+  const [lonlatFound, setLonLat] = useState(fromLonLat([0, 0]));
   const mapRef = useRef(null);
   const olMap = useRef(null);
   const [selectedValue, setSelectedValue] = useState('None Selected');
@@ -40,36 +41,67 @@ const MapComponent = () => {
   }, []);
 
   const handleSelect = (key) => {
-    alert(key);
-    //setSelectedValue(eventKey);
     const newLoc = geodata.find(loc => 
        loc.location === key);
     setCenter(fromLonLat([newLoc.lon, newLoc.lat]));
     setZoom(newLoc.zoom);
   }
 
-  // 3. Create a function to change the center
+  const handleSubmitAddress = (event) => {
+    event.preventDefault(); // Stop page reload
+    
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    const addr = data.Address;
+    //alert(JSON.stringify(data), addr);
+    // get Address from API
+    const indy = geodata.findIndex(loc => loc.location === addr);
+    // alert(indy + '  '+ addr);
+
+    let newCoords = [geodata[1].lon, geodata[1].lat];
+    let newZoom = 10;
+
+    if (indy != -1 ) {
+      newCoords = [ geodata[indy].lon, geodata[indy].lat ];
+      newZoom = geodata[indy].zoom;
+    } 
+    else
+    { alert('Address not found, resetting map');}
+    setCenter(fromLonLat(newCoords),10);
+    setZoom(newZoom);
+    setLonLat(fromLonLat(newCoords));
+  };
+
+  const goToFound = () => {
+    setCenter(lonlatFound);
+  }
+
+  const handleSubmitCoords = (event) => {
+    event.preventDefault(); // Stop page reload
+    
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    const newCoords=[data.lon, data.lat];
+
+    setCenter(fromLonLat(newCoords));
+    setZoom(10);
+  };
+
   const changeMapCenter = (newCoords, newZoom) => {
     // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
     setCenter(fromLonLat(newCoords));
     if (newZoom) setZoom(newZoom);
   };
 
-  // 4. Update the OL map instance when state changes
   useEffect(() => {
     if (olMap.current) {
-      // Option A: Instantly set the center
       //olMap.current.getView().setCenter(center);
-      // Option B: Animate the view change (optional)
-      olMap.current.getView().animate({ center: center, zoom: zoom, duration: 500 });
+      olMap.current.getView().animate({ center: center, zoom: zoom, duration: 1500 });
     }
   }, [center, zoom]);
-
-
   
   return (
     <div>
-
       <div style={{ width: '100%'}} className="bg-dark mt-12 tealtext">
             <Container className="bg-dark mt-12 tealtext">                        
                     <div className="row">
@@ -77,37 +109,46 @@ const MapComponent = () => {
                             <img src={ds} height="64px"></img>
                             <h3>DStar Maps</h3>
                         </div>
+                        
                         <div className = "col-sm-6">                             
                             <div>
-                                <label className="navteal">Optional: Find coordinates of an address</label>
+                              <Form onSubmit={handleSubmitAddress}>
+                                <label className="navteal">Find a map by global address keywords</label>
                                 <Form.Control 
                                     type="text" 
                                     className="form-control-sm"
                                     id="Addr" 
                                     title="Address" 
                                     placeholder="Enter Address"
+                                    name="Address"
                                     //onChange={handleChangeAddress}
                                     />   
-                                <Button type='submit' variant="primary" size="sm" title='Future Use'>Find Coordinates!</Button>
-                                <DropdownButton
-                                    onSelect={(eventKey) =>handleSelect(eventKey)}
-                                    id="dropdown-basic-button" variant="info" 
-                                    title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
-                                    {geodata.map((loc) => (
-                                      <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>
-                                    ))}
-                                </DropdownButton>
+                                <Button type='submit' variant="primary" size="sm" title='Future Use'>Search Maps!</Button>
+                               
+                                <Button type='button' variant="alert" onClick={goToFound} size="sm">Go! ></Button>
+                              </Form>
+
+                              <DropdownButton
+                                  onSelect={(eventKey) =>handleSelect(eventKey)}
+                                  id="dropdown-basic-button" variant="info" 
+                                  title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
+                                  {geodata.map((loc) => (
+                                    <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>
+                                  ))}
+                              </DropdownButton>
+
                             </div>  
                         </div>                            
                         <div className="col-sm-4">
                             <div>
-                                  
+                                <Form onSubmit={handleSubmitCoords}>
                                   <label >Enter coordinates</label>
                                   <Form.Control 
                                     type="text" 
                                     className="form-control-sm" 
                                     id="lat" 
                                     title="Latitude" 
+                                    name="lat"
                                     placeholder="Enter Latitude"
                                     />
 
@@ -115,10 +156,12 @@ const MapComponent = () => {
                                     type="text" 
                                     className="form-control-sm" 
                                     id="lon" 
+                                    name="lon"
                                     title="Longitude" 
                                     placeholder="Enter Longitude Coordinate"
                                     />
-                                  <Button type="button"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
+                                  <Button type="submit"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
+                                </Form>
                             </div>                            
                     </div>  
                     </div>                            
@@ -126,9 +169,9 @@ const MapComponent = () => {
       </div> 
 
       {/* The div where OpenLayers renders the map */}
-      <div ref={mapRef} style={{ width: '100%', height: '600px' }} />
+      <div ref={mapRef} style={{ width: '100%', height: '440px' }} />
       <hr></hr>
-      <div><p class="dataShowSmall">{jsondata}</p></div>
+      <div><p class="dataShowSmall">{jsondata}</p> <p className="stealthBlack">Found: {center}</p> </div>
     </div>
   );
 };
