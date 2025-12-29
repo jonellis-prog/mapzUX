@@ -21,6 +21,9 @@ const MapComponent = () => {
   const mapRef = useRef(null);
   const olMap = useRef(null);
   const [selectedValue, setSelectedValue] = useState('None Selected');
+  const [apiData, setApiData] = useState(null);
+  const [error, setError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
 
   // simulate the data layer until JSON comes from PostGres
   const jsondata = JSON.stringify(geodata);
@@ -102,6 +105,27 @@ const MapComponent = () => {
       olMap.current.getView().animate({ center: center, zoom: zoom, duration: 1500 });
     }
   }, [center, zoom]);
+
+  
+  const fetchData = async () => {
+      //alert('Starting DB Access'); //JFE
+    try {
+      const response = await fetch('/maps'); // Replace with your Node.js API URL
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();        
+      setApiData(JSON.stringify(result)); // Store the entire response
+      //alert(apiData);  //JFE
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+      //alert('Done with DB'); //JFE
+    };
+
+  fetchData();
   
   return (
     <div>
@@ -135,9 +159,13 @@ const MapComponent = () => {
                                   onSelect={(eventKey) =>handleSelect(eventKey)}
                                   id="dropdown-basic-button" variant="info" 
                                   title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
-                                  {geodata.map((loc) => (
-                                    <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>
-                                  ))}
+                                  {!isLoading ? 
+                                    (geodata.map((loc) => (
+                                    <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
+                                    : 
+                                    (geodata.map((loc) => (
+                                    <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
+                                  }
                               </DropdownButton>
 
                             </div>  
@@ -174,7 +202,11 @@ const MapComponent = () => {
       {/* The div where OpenLayers renders the map */}
       <div ref={mapRef} style={{ width: '100%', height: '440px' }} />
       <hr></hr>
-      <div><p class="dataShowSmall">{jsondata}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>
+      <div><p class="dataShowSmall">JSON DATA -->>.... {jsondata}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>
+      <hr></hr> 
+      {!isLoading ? (<div><p class="dataShowSmall">API DATA -->>> {apiData}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>) 
+      : (<div>LOADING DATA@!!</div>) }                         
+      
     </div>
   );
 };
