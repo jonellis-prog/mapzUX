@@ -4,7 +4,9 @@ import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { fromLonLat} from 'ol/proj';
 import 'ol/ol.css';
-
+import MousePosition from 'ol/control/MousePosition';
+import { createStringXY } from 'ol/coordinate';
+import { defaults as defaultControls } from 'ol/control';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { Container, FormControl, Form, Card, Button, DropdownButton, DropdownItem, Dropdown} from 'react-bootstrap';
 
@@ -29,9 +31,22 @@ const MapComponent = () => {
 
   const jsondata = JSON.stringify(geodata);
 
+  const [mouseCoordinates, setMouseCoordinates] = useState('');
+  const defaultMapHeight = '440px';
+
+  const mousePositionControl = new MousePosition({
+    coordinateFormat: createStringXY(4), // Format coordinates to 4 decimal places
+    projection: 'EPSG:4326', // Display coordinates in Lat/Lon
+    className: 'custom-mouse-position', // Custom class for styling
+    target: document.getElementById('mouse-position'), // Target element for display
+    undefinedHTML: '&nbsp;', // What to display when mouse leaves map
+  });
+
+
   // 2. Initialize map on component mount
   useEffect(() => {
     olMap.current = new Map({
+      controls: defaultControls().extend([mousePositionControl]),
       target: mapRef.current,
       layers: [
         new TileLayer({
@@ -98,6 +113,16 @@ const MapComponent = () => {
     // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
     setCenter(fromLonLat(newCoords));
     if (newZoom) setZoom(newZoom);
+  };
+
+  const  randomMapCenter = () => {
+    // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
+    const rlat = Math.floor(Math.random() * (41)) -80;
+    const rlon = Math.floor(Math.random() * (150)) -90;
+    const newCoords = [rlat, rlon];
+    setCenter(fromLonLat(newCoords));
+    alert(newCoords);
+    setZoom(Math.floor(6));
   };
 
   useEffect(() => {
@@ -192,7 +217,8 @@ const MapComponent = () => {
                                     title="Longitude" 
                                     placeholder="Enter Longitude Coordinate"
                                     />
-                                  <Button type="submit"  variant="primary" size="sm">Show Map for these coordinatese!</Button>
+                                  <span><Button type="submit"  variant="primary" size="sm">Show Map for these coordinates!</Button>
+                                  <Button tyype="button" variant="success" size="sm" onClick={randomMapCenter}>Random Destination</Button></span>
                                 </Form>
                             </div>                            
                     </div>  
@@ -201,7 +227,7 @@ const MapComponent = () => {
       </div> 
 
       {/* The div where OpenLayers renders the map */}
-      <div ref={mapRef} style={{ width: '100%', height: '440px' }} />
+      <div ref={mapRef} style={{ width: '100%', height: '440px' }}>{mouseCoordinates}</div>
       <hr></hr>
       <div><p class="dataShowSmall">JSON DATA -->>.... {jsondata}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>
       <hr></hr> 
