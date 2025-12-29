@@ -1,5 +1,5 @@
 [{
-        "id": 1,
+        "id": "1",
         "location": "NYC",
         "description": "New York City, NY USA",
         "lat": 40.75,
@@ -8,7 +8,7 @@
         "flightprice": 1150
     },
    {
-        "id": 2,
+        "id": "2",
         "location": "Venice",
         "description": "New York City, NY USA",
         "lat": 45.4342,
@@ -17,7 +17,7 @@
         "flightprice": 1150
     },
     {
-        "id": 3,
+        "id": "3",
         "location": "London",
         "description": "New York City, NY USA",
         "lat": 51.5072, 
@@ -26,7 +26,7 @@
         "flightprice": 1150
     },
         {
-        "id": 4,
+        "id": "4",
         "location": "STL",
         "description": "Sain Louis, MO USA",
         "lat": 38.6720,
