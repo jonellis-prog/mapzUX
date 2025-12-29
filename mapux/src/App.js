@@ -21,11 +21,12 @@ const MapComponent = () => {
   const mapRef = useRef(null);
   const olMap = useRef(null);
   const [selectedValue, setSelectedValue] = useState('None Selected');
+
   const [apiData, setApiData] = useState(null);
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(true);
+  const defaultData = geodata;
 
-  // simulate the data layer until JSON comes from PostGres
   const jsondata = JSON.stringify(geodata);
 
   // 2. Initialize map on component mount
@@ -108,21 +109,21 @@ const MapComponent = () => {
 
   
   const fetchData = async () => {
-      //alert('Starting DB Access'); //JFE
+      
     try {
-      const response = await fetch('/maps'); // Replace with your Node.js API URL
+      const response = await fetch('/maps'); 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const result = await response.json();        
-      setApiData(JSON.stringify(result)); // Store the entire response
-      //alert(apiData);  //JFE
+      setApiData(JSON.stringify(result)); 
+      
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
-      //alert('Done with DB'); //JFE
+     
     };
 
   fetchData();
@@ -160,7 +161,7 @@ const MapComponent = () => {
                                   id="dropdown-basic-button" variant="info" 
                                   title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
                                   {!isLoading ? 
-                                    (geodata.map((loc) => (
+                                    (defaultData.map((loc) => (
                                     <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
                                     : 
                                     (geodata.map((loc) => (
