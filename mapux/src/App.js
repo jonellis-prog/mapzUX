@@ -8,7 +8,7 @@ import MousePosition from 'ol/control/MousePosition';
 import { createStringXY } from 'ol/coordinate';
 import { defaults as defaultControls } from 'ol/control';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
-import { Container, FormControl, Form, Card, Button, DropdownButton, DropdownItem, Dropdown} from 'react-bootstrap';
+import { Container, Form, Button, DropdownButton, Dropdown} from 'react-bootstrap';
 
 import './App.css';
 import ds from "./images/DeathStar.png"
@@ -109,11 +109,11 @@ const MapComponent = () => {
     setZoom(10);
   };
 
-  const changeMapCenter = (newCoords, newZoom) => {
+/*   const changeMapCenter = (newCoords, newZoom) => {
     // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
     setCenter(fromLonLat(newCoords));
     if (newZoom) setZoom(newZoom);
-  };
+  }; */
 
   const  randomMapCenter = () => {
     // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
@@ -159,7 +159,7 @@ const MapComponent = () => {
             <Container className="bg-dark mt-12 tealtext">                        
                     <div className="row">
                         <div className="col-sm-2">
-                            <img src={ds} height="64px"></img>
+                            <img src={ds} height="64px" alt=""></img>
                             <h3>DStar Maps</h3>
                         </div>
                         
@@ -176,24 +176,23 @@ const MapComponent = () => {
                                     name="Address"
                                     //onChange={handleChangeAddress}
                                     />   
-                                <Button type='submit' variant="primary" size="sm" title='Future Use'>Search Maps!</Button>
-                               
-                                <Button type='button' variant="alert" onClick={goToFound} size="sm">Go! ></Button>
-                              </Form>
-
-                              <DropdownButton
-                                  onSelect={(eventKey) =>handleSelect(eventKey)}
-                                  id="dropdown-basic-button" variant="info" 
-                                  title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
-                                  {!isLoading ? 
-                                    (defaultData.map((loc) => (
-                                    <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
-                                    : 
-                                    (geodata.map((loc) => (
-                                    <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
-                                  }
-                              </DropdownButton>
-
+                                <span>
+                                <Button type='submit' variant="primary" size="sm">Search Maps!</Button>                              
+                                <DropdownButton
+                                    onSelect={(eventKey) =>handleSelect(eventKey)}
+                                    id="dropdown-basic-button" variant="info" 
+                                    title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
+                                    {!isLoading ? 
+                                      (defaultData.map((loc) => (
+                                      <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
+                                      : 
+                                      (geodata.map((loc) => (
+                                      <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
+                                    }
+                                </DropdownButton>
+                                </span>
+                            </Form>
+                            <Button type='button' variant="alert" onClick={goToFound} size="sm">Go! ></Button>
                             </div>  
                         </div>                            
                         <div className="col-sm-4">
