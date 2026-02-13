@@ -17,11 +17,28 @@ function App() {
 
   // Function to handle the change event
   const handleCityChange = (event) => {
-    setSelectedCity(event.target.value);
+    const id = event.target.value;
+ 
+    const index = data.findIndex(locz => locz.place_id == id);
+  
+    setSelectedCity(data[index].display_name);
+    //alert(index + selectedCity);
+    if (index   != -1) {
+      //alert(data[index].lat + " , "+ data[index].lon);
+      // showMap()
+
+    }
   };
 
   const handleAddrChange = (event) => {
     setNewAddr(event.target.value);
+    //address has been changed, get lon and lat from data index
+    const index = data.findIndex(locz => locz.display_name === newAddr);
+    if (index   != -1) {
+      alert(data[index].lat + data[[index].lon]);
+      // showMap()
+
+    }
   };
 
   useEffect(() => {
@@ -65,6 +82,7 @@ function App() {
               title="Address" 
               placeholder="Enter Address"
               name="Address"
+              defaultValue={searchParams.has('Address') ? searchParams.get('Address') : '' }
               //onChange={handleChangeAddress}
               />   
           <span>
@@ -77,13 +95,7 @@ function App() {
 
       {loading && <p>Loading data...</p>}
       {error && <p>Error: {error}</p>}
-{/*       {data && (
-        <ul>
-          <li>Data loaded successfully! Check the console or adjust rendering as needed.</li>
-                <pre>
-                  {JSON.stringify(data, null, 2)}
-                </pre>
-        </ul>)} */}
+
 
       {selectedCity && <p>You selected city key: {selectedCity}</p>}
 
@@ -93,7 +105,7 @@ function App() {
 
  
         {data.map((loc) => (
-          <option key={loc.name} value={loc.display_name}>
+          <option key={loc.place_id} value={loc.place_id}>
             {loc.display_name}
           </option>
         ))}
@@ -103,8 +115,10 @@ function App() {
 
       }
        
-
+      <div ref={mapRef} style={{ width: '100%', height: '440px' }}>{mouseCoordinates}</div>
     </div>
+
+    
 
     )}
 
