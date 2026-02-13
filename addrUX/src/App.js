@@ -14,6 +14,8 @@ function App() {
   const [selectedCity, setSelectedCity] = useState('');
   const [newAddr, setNewAddr] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const mapRef = useRef(null);
+  const [mouseCoordinates, setMouseCoordinates] = useState('');
 
   // Function to handle the change event
   const handleCityChange = (event) => {
@@ -24,7 +26,7 @@ function App() {
     setSelectedCity(data[index].display_name);
     //alert(index + selectedCity);
     if (index   != -1) {
-      //alert(data[index].lat + " , "+ data[index].lon);
+      alert(data[index].lat + " , "+ data[index].lon);
       // showMap()
 
     }
