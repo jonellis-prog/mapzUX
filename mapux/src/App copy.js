@@ -27,8 +27,6 @@ const MapComponent = () => {
   const isError = false; //make UseState
   const jsondata = JSON.stringify(geodata);
   let data = jsondata;
-  let newCoords;
-  const [newAlert, setNewAlert] = useState(''); 
 
   const [mouseCoordinates, setMouseCoordinates] = useState('');
   const defaultMapHeight = '440px';
@@ -62,14 +60,10 @@ const MapComponent = () => {
   }, []);
 
   const handleSelect = (key) => {
-    try {
     const newLoc = geodata.find(loc => 
        loc.location === key);
     setCenter(fromLonLat([newLoc.lon, newLoc.lat]));
     setZoom(newLoc.zoom);
-    setNewAlert(key);
-    }
-    catch {}
   }
 
   const handleSubmitAddress = (event) => {
@@ -78,45 +72,51 @@ const MapComponent = () => {
     const formData = new FormData(event.currentTarget);
     let data = Object.fromEntries(formData.entries());
     const addr = data.Address;
-    // alert(JSON.stringify(data), addr);
+    alert(JSON.stringify(data), addr);
     // get Address from FAvorites
     const indy = geodata.findIndex(loc => loc.location === addr);
-    if (indy !== -1 ) {
-      setCenter([ geodata[indy].lon, geodata[indy].lat ]);
-    }
+    alert(indy + '  '+ addr);
+
+   /*  let newCoords = [geodata[0].lon, geodata[0].lat];
+    let newZoom = 10; */
+
+    if (indy != -1 ) {
+      newCoords = [ geodata[indy].lon, geodata[indy].lat ];
+      newZoom = geodata[indy].zoom;
+    } 
     else
     { 
+      alert('Address not found in favorites,  checking API');      
+      const getdata = async() => { 
+        try {
+          
+          const newAddress = "/getcoord/" + addr;
+          alert(newAddress);
+          const response = await fetch(newAddress);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const result = await response.json();
+          data = result;
+          alert(result);
+          newCoords=[data[1].lon, data[1].lat]
+          newZoom=9;
+        } catch (err) {
+            alert(err);     
+        } finally {
+        }   
+      } 
 
-      const newAddress = "/getcoord/" + addr;
-      //alert(newAddress);
-
-      fetch(newAddress)
-      .then(response => {
-        // fetch() resolves even on HTTP error statuses, so we must check ok
-        if (!response.ok) {
-          throw new Error('Network response was not OK!');
-        }
-        return response.json(); // response.json() also returns a Promise
-      })
-      .then(data => {
-        if (data == '') {
-          const badCoord = "No Coordinates Found. Please try again!";
-          setNewAlert(badCoord);throw new Error(badCoord);
-        }
-        newCoords = ([ data[0].lon, data[0].lat ]);
-        
-        console.log(newCoords);  
-        setNewAlert(newCoords);
-        setCenter(fromLonLat(newCoords) );
-        if (newAddress.includes(' ')) {setZoom(3); } else {setZoom(8);}
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    
+      getdata();
     }
+    setCenter(fromLonLat(newCoords),10);
+    setZoom(newZoom);
+    setLonLat(fromLonLat(newCoords));
+  };
 
-  }; 
+  const goToFound = () => {
+    setCenter(lonlatFound);
+  }
 
   const handleSubmitCoords = (event) => {
     event.preventDefault(); // Stop page reload
@@ -129,17 +129,11 @@ const MapComponent = () => {
     setZoom(10);
   };
 
-  const goToFound = () => {
-    setCenter(lonlatFound);
-  }
-
-  const setNewZoom = (event) => {
-    
-    alert(event);
-    const newZoom = event.zoom;
-    alert(newZoom);
-    setZoom(newZoom)
-  };
+/*   const changeMapCenter = (newCoords, newZoom) => {
+    // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
+    setCenter(fromLonLat(newCoords));
+    if (newZoom) setZoom(newZoom);
+  }; */
 
   const  randomMapCenter = () => {
     // Coords should be in the desired projection (e.g., EPSG:3857 for OSM)
@@ -161,9 +155,6 @@ const MapComponent = () => {
   
   return (
     <div>
-      { (newAlert !== '')  ?  (
-      <div className="alert alert-info" role="alert">{newAlert}</div>): (<hr />)
-      }
       <div style={{ width: '100%'}} className="bg-dark mt-12 tealtext">
             <Container className="bg-dark mt-12 tealtext">                        
                     <div className="row">
@@ -185,19 +176,23 @@ const MapComponent = () => {
                                     name="Address"
                                     //onChange={handleChangeAddress}
                                     />   
-                           
-                                <Button type='submit' variant="primary" size="sm">Search Maps!</Button>  
-
+                                <span>
+                                <Button type='submit' variant="primary" size="sm">Search Maps!</Button>                              
                                 <DropdownButton
                                     onSelect={(eventKey) =>handleSelect(eventKey)}
                                     id="dropdown-basic-button" variant="info" 
                                     title={selectedValue === 'None Selected' ? 'Choose a Destination' : selectedValue}>
-                                    {
+                                    {!isLoading ? 
+                                      (geodata.map((loc) => (
+                                      <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
+                                      : 
                                       (geodata.map((loc) => (
                                       <Dropdown.Item eventKey={loc.location}>{loc.location}</Dropdown.Item>)))
                                     }
                                 </DropdownButton>
-                              </Form>
+                                </span>
+                            </Form>
+                            <Button type='button' variant="alert" onClick={goToFound} size="sm">Go! ></Button>
                             </div>  
                         </div>                            
                         <div className="col-sm-4">
