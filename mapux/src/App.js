@@ -88,7 +88,6 @@ const MapComponent = () => {
     { 
 
       const newAddress = "/getcoord/" + addr;
-      //alert(newAddress);
 
       fetch(newAddress)
       .then(response => {
@@ -108,7 +107,7 @@ const MapComponent = () => {
         console.log(newCoords);  
         setNewAlert(newCoords);
         setCenter(fromLonLat(newCoords) );
-        if (newAddress.includes(' ')) {setZoom(3); } else {setZoom(8);}
+        if (newAddress.includes(' ')) {setZoom(11); } else {setZoom(8);}
       })
       .catch(error => {
         console.log(error);
@@ -231,13 +230,8 @@ const MapComponent = () => {
       </div> 
 
       {/* The div where OpenLayers renders the map */}
-      <div ref={mapRef} style={{ width: '100%', height: '440px' }}>{mouseCoordinates}</div>
+      <div ref={mapRef} style={{ width: '100%', height: '660px' }}>{mouseCoordinates}</div>
       <hr></hr>
-      <div><p class="dataShowSmall">JSON DATA -->>.... {jsondata}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>
-      <hr></hr> 
-      {!isLoading ? (<div><p class="dataShowSmall">API DATA -->>> {data}</p> <p className="stealthBlack dataShowSmall">Found: {center}</p> </div>) 
-      : (<div>LOADING DATA@!!</div>) }                         
-      
     </div>
   );
 };
