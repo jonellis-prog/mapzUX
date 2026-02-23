@@ -53,7 +53,7 @@ function App() {
           setNewAddr(searchParams.get('Address'));
         }
 
-        const response = await fetch('/getcoord/' + newAddr); // Replace with your API endpoint
+        const response = await fetch('/getcoord/' + newAddr); 
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }
